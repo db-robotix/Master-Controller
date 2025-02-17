@@ -1,2 +1,2 @@
 # Master-Controller
-Libraries for the db-robotix master controller
+Add directories and files into the libraries folder of your Arduino IDE
