@@ -44,6 +44,8 @@ void Drivetrain::setTargetSteps(int16_t steps) {
 
 void Drivetrain::go() {
   sendCommand(GO, 0);
+  delay(1);
+  getStatus();
 }
 
 void Drivetrain::stop() {
@@ -226,10 +228,10 @@ int16_t ColorSensorA::hue() {
 int16_t ColorSensorA::color(uint16_t _r, uint16_t _g, uint16_t _b) {
   int16_t _hue = hue(_r,_g,_b);
   if (intens(_r,_g,_b) < 20) return BLACK;
-  else if ((saturation(_r,_g,_b) < 25) && (intens(_r,_g,_b) > 150)) return WHITE;
+  else if ((saturation(_r,_g,_b) < 30) && (intens(_r,_g,_b) > 150)) return WHITE;
   else if (_hue > -20 && _hue <= 15) return RED;
-  else if (_hue > 15  && _hue <= 90) return YELLOW;
-  else if (_hue > 90  && _hue <= 175) return GREEN;
+  else if (_hue > 15  && _hue <= 60) return YELLOW;
+  else if (_hue > 60  && _hue <= 175) return GREEN;
   else if (_hue > 175 || _hue <= -20) return BLUE;
   else return BLACK;
 }
