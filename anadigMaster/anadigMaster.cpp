@@ -5,7 +5,7 @@ float Battery::getVoltage() {
   uint16_t adcValue;
   analogReference(AR_INTERNAL2V23);
   adcValue = analogRead(BatteryVoltagePin);
-  return 0.0158 * adcValue;
+  return 0.0157 * adcValue;
 }
 
 uint16_t Battery::percent(float voltage) {
@@ -118,8 +118,9 @@ int16_t LineSensor::getAmbientSum() {
   return a1 + a2;
 }
 
-ServoMotor::ServoMotor(byte _type) {  // constructor
+ServoMotor::ServoMotor(byte _type, byte _servoPin) {  // constructor
   lastAngle = 0;
+  servoPin = _servoPin;
   switch (_type) {
     case MINI:
 	  maxAngle = 180;

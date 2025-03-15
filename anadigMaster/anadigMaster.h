@@ -118,7 +118,7 @@ enum servoTypes {MINI, GEEK};
 
 class ServoMotor : public Servo {
 public:
-  ServoMotor(byte _type);
+  ServoMotor(byte _type, byte _servoPin);  // _servoPin = 8 or 9
   
 /**
  * @brief Turn servo to degrees (absolutely) fast
@@ -138,7 +138,7 @@ public:
 private:
   int16_t angle2pulsewidth(int16_t angle);
   int16_t lastAngle;
-  const byte servoPin = 8;
+  byte servoPin;  // 8 or 9
   int16_t maxAngle;
   uint16_t pw_min;
   uint16_t pw_max;
