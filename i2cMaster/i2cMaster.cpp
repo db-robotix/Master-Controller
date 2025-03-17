@@ -45,7 +45,7 @@ void Drivetrain::setTargetSteps(int16_t steps) {
 void Drivetrain::go() {
   sendCommand(GO, 0);
   delay(1);
-  getStatus();
+  getStatus();  // avoid initial error
 }
 
 void Drivetrain::stop() {
@@ -133,10 +133,14 @@ void MotorsX::setTargetSteps_B(int16_t steps) {
 
 void MotorsX::go_A() {
   sendCommand(GO_A, 0);
+  delay(1);
+  getStatus();  // avoid initial error
 }
 
 void MotorsX::go_B() {
   sendCommand(GO_B, 0);
+  delay(1);
+  getStatus();  // avoid initial error
 }
 
 void MotorsX::stop_A() {
