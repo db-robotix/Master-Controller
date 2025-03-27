@@ -219,6 +219,20 @@ void ColorSensorA::getRGB() {
   readGreenLight(g);
   readBlueLight(b);
   r *= 5; g *= 4; b *= 3;  // white balance
+  r = max(1, r-r0);
+  g = max(1, g-g0);
+  b = max(1, b-b0);
+}
+
+void ColorSensorA::calibrate() {
+  uint16_t _r0, _g0, _b0;
+  reset();
+  getRGB(_r0, _g0, _b0);
+  r0 = _r0; g0 = _g0; b0 = _b0;
+}
+
+void ColorSensorA::reset() {
+  r0 = 0; g0 = 0; b0 = 0;
 }
 
 int16_t ColorSensorA::hue(uint16_t _r, uint16_t _g, uint16_t _b) {
@@ -231,8 +245,8 @@ int16_t ColorSensorA::hue() {
 
 int16_t ColorSensorA::color(uint16_t _r, uint16_t _g, uint16_t _b) {
   int16_t _hue = hue(_r,_g,_b);
-  if (intens(_r,_g,_b) < 20) return BLACK;
-  else if ((saturation(_r,_g,_b) < 30) && (intens(_r,_g,_b) > 150)) return WHITE;
+  if (intens(_r,_g,_b) < 8) return BLACK;
+  else if ((saturation(_r,_g,_b) < 35) && (intens(_r,_g,_b) > 30)) return WHITE;
   else if (_hue > -20 && _hue <= 15) return RED;
   else if (_hue > 15  && _hue <= 60) return YELLOW;
   else if (_hue > 60  && _hue <= 175) return GREEN;
@@ -281,6 +295,20 @@ void ColorSensorB::getRGB() {
   uint16_t c;  // dummy
   getRawData(&r, &g, &b, &c);
   r *= 2; g *= 3; b *= 4;  // white balance
+  r = max(1, r-r0);
+  g = max(1, g-g0);
+  b = max(1, b-b0);
+}
+
+void ColorSensorB::calibrate() {
+  uint16_t _r0, _g0, _b0;
+  reset();
+  getRGB(_r0, _g0, _b0);
+  r0 = _r0; g0 = _g0; b0 = _b0;
+}
+
+void ColorSensorB::reset() {
+  r0 = 0; g0 = 0; b0 = 0;
 }
 
 int16_t ColorSensorB::hue(uint16_t _r, uint16_t _g, uint16_t _b) {
