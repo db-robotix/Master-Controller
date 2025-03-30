@@ -216,6 +216,21 @@ public:
   void start();
   
 /**
+ * @brief Start color sensor library
+ */
+  void start(byte digPin);
+  
+/**
+ * @brief Switch LEDs on
+ */
+  void ledOn();
+  
+/**
+ * @brief Switch LEDs off
+ */
+  void ledOff();
+  
+/**
  * @brief Measure and write RGB values to the 3 variables in parenthesis
  */
   void getRGB(uint16_t &_r, uint16_t &_g, uint16_t &_b);
@@ -224,6 +239,26 @@ public:
  * @brief Measure and write RGB values to the instance variables r,g,b
  */
   void getRGB();
+  
+/**
+ * @brief Differential measurement and write RGB values to the 3 variables in parenthesis
+ */
+  void flashRGB(uint16_t &_r, uint16_t &_g, uint16_t &_b);
+  
+/**
+ * @brief Differential measurement and write RGB values to the instance variables r,g,b
+ */
+  void flashRGB();
+  
+/**
+ * @brief Measure dark RGB values and store to variables r0,g0,b0
+ */
+  void calibrate();
+  
+/**
+ * @brief set dark values r0,g0,b0 to zero
+ */
+  void reset();
   
 /**
  * @brief Calculate the hue value (-179 ... +180 ; HSL color model) from the given RGB values
@@ -266,6 +301,10 @@ public:
   int16_t intens();
 
   uint16_t r, g, b;
+  uint16_t r0 = 0, g0 = 0, b0 = 0;  // dark values
+  uint16_t blackLimit = 40;
+private:
+  byte ledPin;
 };
 
 /********************************************************************************/
@@ -290,6 +329,16 @@ public:
  * @brief Measure and write RGB values to the instance variables r,g,b
  */
   void getRGB();
+  
+/**
+ * @brief Measure dark RGB values and store to variables r0,g0,b0
+ */
+  void calibrate();
+  
+/**
+ * @brief set dark values r0,g0,b0 to zero
+ */
+  void reset();
   
 /**
  * @brief Calculate the hue value (HSL color model) from the given RGB values
@@ -332,6 +381,7 @@ public:
   int16_t intens();
 
   uint16_t r, g, b;
+  uint16_t r0 = 0, g0 = 0, b0 = 0;  // dark values
 };
 
 #endif

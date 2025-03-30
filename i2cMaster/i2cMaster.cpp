@@ -205,6 +205,25 @@ void Display::setRow(byte row) {
 void ColorSensorA::start() {
   if (!init()) Serial.println("APDS error!");
   enableLightSensor(false);
+  ledPin = 0;
+}
+
+void ColorSensorA::start(byte digPin) {
+  if (!init()) Serial.println("APDS error!");
+  enableLightSensor(false);
+  ledPin = digPin;
+  if (ledPin > 0) {
+    pinMode(ledPin, OUTPUT);
+    ledOff();
+  }
+}
+
+void ColorSensorA::ledOn() {
+  if (ledPin > 0) digitalWrite(ledPin, HIGH);
+}
+
+void ColorSensorA::ledOff() {
+  if (ledPin > 0) digitalWrite(ledPin, LOW);
 }
 
 void ColorSensorA::getRGB(uint16_t &_r, uint16_t &_g, uint16_t &_b) {
@@ -222,6 +241,32 @@ void ColorSensorA::getRGB() {
   r = max(1, r-r0);
   g = max(1, g-g0);
   b = max(1, b-b0);
+}
+
+void ColorSensorA::flashRGB(uint16_t &_r, uint16_t &_g, uint16_t &_b) {
+  flashRGB();
+  _r = r;
+  _g = g;
+  _b = b;
+}
+
+void ColorSensorA::flashRGB() {
+  uint16_t _r0, _g0, _b0;
+  ledOff();  
+  readRedLight(_r0);
+  readGreenLight(_g0);
+  readBlueLight(_b0);
+  ledOn();
+  delay(5);
+  _r0 *= 5; _g0 *= 4; _b0 *= 3;  // white balance
+  readRedLight(r);
+  readGreenLight(g);
+  readBlueLight(b);
+  r *= 5; g *= 4; b *= 3;  // white balance
+  r = max(1, r-_r0);
+  g = max(1, g-_g0);
+  b = max(1, b-_b0);
+  ledOff();
 }
 
 void ColorSensorA::calibrate() {
@@ -245,12 +290,12 @@ int16_t ColorSensorA::hue() {
 
 int16_t ColorSensorA::color(uint16_t _r, uint16_t _g, uint16_t _b) {
   int16_t _hue = hue(_r,_g,_b);
-  if (intens(_r,_g,_b) < 8) return BLACK;
-  else if ((saturation(_r,_g,_b) < 35) && (intens(_r,_g,_b) > 30)) return WHITE;
+  if (intens(_r,_g,_b) < blackLimit) return BLACK;
+  else if (saturation(_r,_g,_b) <= 25) return WHITE;
   else if (_hue > -20 && _hue <= 15) return RED;
-  else if (_hue > 15  && _hue <= 60) return YELLOW;
-  else if (_hue > 60  && _hue <= 175) return GREEN;
-  else if (_hue > 175 || _hue <= -20) return BLUE;
+  else if (_hue > 15  && _hue <= 90) return YELLOW;
+  else if (_hue > 90  && _hue <= 180) return GREEN;
+  else if (_hue <= -20) return BLUE;
   else return BLACK;
 }
 
