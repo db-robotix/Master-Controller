@@ -114,6 +114,23 @@ private:
   const byte averaging = 10;
 };
 
+class UltrasonicSensor {
+public:
+  UltrasonicSensor();
+  
+/**
+ * @brief Measure distance in mm, 0 = not valid
+ */
+  int16_t getDistance();
+
+  uint16_t ultrasoundSpeed = 343;  // m/s
+  
+private:
+  const byte triggerPin = 4;
+  const byte echoPin = 5;
+};
+
+
 enum servoTypes {MINI, GEEK};
 
 class ServoMotor : public Servo {

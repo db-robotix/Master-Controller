@@ -118,6 +118,24 @@ int16_t LineSensor::getAmbientSum() {
   return a1 + a2;
 }
 
+UltrasonicSensor::UltrasonicSensor() {  // constructor
+  pinMode(triggerPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  digitalWrite(triggerPin, LOW);
+}
+
+int16_t UltrasonicSensor::getDistance() {
+  uint32_t duration;  // us
+  uint32_t distance;  // mm
+  digitalWrite(triggerPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(triggerPin, LOW); // start transmitting
+  duration = pulseIn(echoPin, HIGH, 38000);  // max 38 ms
+  distance = duration * ultrasoundSpeed / 2000; 
+  if (distance > 2000) distance = 0;
+  return (int16_t)distance;
+}
+
 ServoMotor::ServoMotor(byte _type, byte _servoPin) {  // constructor
   lastAngle = 0;
   servoPin = _servoPin;
