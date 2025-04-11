@@ -237,7 +237,7 @@ void ColorSensorA::getRGB() {
   readRedLight(r);
   readGreenLight(g);
   readBlueLight(b);
-  r *= 5; g *= 4; b *= 3;  // white balance
+  r *= 6; g *= 4; b *= 3;  // white balance
   r = max(1, r-r0);
   g = max(1, g-g0);
   b = max(1, b-b0);
@@ -258,11 +258,11 @@ void ColorSensorA::flashRGB() {
   readBlueLight(_b0);
   ledOn();
   delay(5);
-  _r0 *= 5; _g0 *= 4; _b0 *= 3;  // white balance
+  _r0 *= 6; _g0 *= 4; _b0 *= 3;  // white balance
   readRedLight(r);
   readGreenLight(g);
   readBlueLight(b);
-  r *= 5; g *= 4; b *= 3;  // white balance
+  r *= 6; g *= 4; b *= 3;  // white balance
   r = max(1, r-_r0);
   g = max(1, g-_g0);
   b = max(1, b-_b0);
