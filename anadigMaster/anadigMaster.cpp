@@ -4,6 +4,7 @@
 float Battery::getVoltage() {
   uint16_t adcValue;
   analogReference(AR_INTERNAL2V23);
+  delay(10);
   adcValue = analogRead(BatteryVoltagePin);
   return 0.0157 * adcValue;
 }
@@ -119,12 +120,15 @@ int16_t LineSensor::getAmbientSum() {
 }
 
 UltrasonicSensor::UltrasonicSensor() {  // constructor
-  pinMode(triggerPin, OUTPUT);
-  pinMode(echoPin, INPUT);
-  digitalWrite(triggerPin, LOW);
+  pinMode(triggerPin1, OUTPUT);
+  pinMode(triggerPin2, OUTPUT);
+  pinMode(echoPin1, INPUT);
+  pinMode(echoPin2, INPUT);
+  digitalWrite(triggerPin1, LOW);
+  digitalWrite(triggerPin2, LOW);
 }
 
-int16_t UltrasonicSensor::getDistance() {
+int16_t UltrasonicSensor::measureDistance(uint8_t triggerPin, uint8_t echoPin) {
   uint32_t duration;  // us
   uint32_t distance;  // mm
   digitalWrite(triggerPin, HIGH);
@@ -134,6 +138,18 @@ int16_t UltrasonicSensor::getDistance() {
   distance = duration * ultrasoundSpeed / 2000; 
   if (distance > 2000) distance = 0;
   return (int16_t)distance;
+}
+
+int16_t UltrasonicSensor::getDistance() {
+  return measureDistance(triggerPin1, echoPin1);
+}
+
+int16_t UltrasonicSensor::getDistance1() {
+  return measureDistance(triggerPin1, echoPin1);
+}
+
+int16_t UltrasonicSensor::getDistance2() {
+  return measureDistance(triggerPin2, echoPin2);
 }
 
 ServoMotor::ServoMotor(byte _type, byte _servoPin) {  // constructor

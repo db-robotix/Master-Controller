@@ -122,12 +122,17 @@ public:
  * @brief Measure distance in mm, 0 = not valid
  */
   int16_t getDistance();
+  int16_t getDistance1();
+  int16_t getDistance2();
 
   uint16_t ultrasoundSpeed = 343;  // m/s
   
 private:
-  const byte triggerPin = 4;
-  const byte echoPin = 5;
+  int16_t measureDistance(uint8_t triggerPin, uint8_t echoPin);
+  const byte triggerPin1 = 4;
+  const byte echoPin1 = 5;
+  const byte triggerPin2 = 15;
+  const byte echoPin2 = 16;
 };
 
 
