@@ -71,6 +71,16 @@ public:
   int16_t getStatus();
   
 /**
+ * @brief Get information if motors are still running
+ */
+  bool isRunning();
+  
+/**
+ * @brief Wait until motors are not running anymore
+ */
+  void wait();
+  
+/**
  * @brief Estimate the total running time in milliseconds
  */
   uint16_t estimateTime(int32_t distance, int16_t speed, int16_t accel, int16_t decel);

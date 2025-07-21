@@ -74,6 +74,15 @@ int16_t Drivetrain::getStatus() {
   return value;
 }
 
+bool Drivetrain::isRunning() {
+  return (getStatus() > 0);
+}
+
+void Drivetrain::wait() {
+  delay(50);
+  while (isRunning()) delay(1);
+}
+
 uint16_t Drivetrain::estimateTime(int32_t distance, int16_t speed, int16_t accel, int16_t decel) {  // distance in mm, speed in cm/s, accel in cm/s2
   int16_t v_max = (int16_t)sqrt(0.2 * abs(distance) * accel * decel / (accel + decel));
   if (speed > v_max) speed = (int32_t)v_max;
