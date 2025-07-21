@@ -22,11 +22,28 @@ bool Button::pressed() {  // pin = LOW
 }
 
 void Button::wait(uint32_t dly = 0) {  // millisecs
-  while(digitalRead(ButtonPin)) delay(1);  // wait until low = button pressed
+  while(!pressed()) delay(1);  // wait until button pressed
   delay(2); // debouncing of button contact
-  while(!digitalRead(ButtonPin)) delay(1);  // wait until high again
+  while(pressed()) delay(1);  // wait until button released
   delay(dly);
 }
+void Button::wait() {wait(0);}
+
+uint16_t Button::count(uint8_t timeout = 2) {  // seconds
+  uint16_t counts = 0;
+  unsigned long timer = millis();
+  while (millis() - timer < 1000*timeout) {
+    if (pressed()) {
+      counts++;
+	  delay(5); // debouncing of button contact
+	  while (pressed()) delay(1);  // wait until button released
+	  timer = millis();
+	}
+	delay(5);
+	}
+  return counts;
+}
+uint16_t Button::count() {return count(2);}
 
 Led::Led() {  // constructor
   pinMode(LedPin, OUTPUT);
@@ -68,28 +85,28 @@ void LineSensor::ledOff() {
 void LineSensor::getAmbient(int16_t &aL, int16_t &aR) {
   int32_t a1 = 0, a2 = 0;
   for (int i = 0; i < averaging; i++) {
-    a1 += analogRead(LSensorPin);
-    a2 += analogRead(RSensorPin);
-    delayMicroseconds(100);
+    delayMicroseconds(50);
+    a1 += analogReadFast(LSensorPin);
+    a2 += analogReadFast(RSensorPin);
   }
   aL = constrain(a1 / averaging, 1, 1023);
   aR = constrain(a2 / averaging, 1, 1023);
 }
 
-void LineSensor::getReflections(int16_t &aL, int16_t &aR) {
+void LineSensor::getReflections(int16_t &aL, int16_t &aR) {  // takes 2.5 millisec
   int32_t a1 = 0, a2 = 0;
   ledOn();
   for (int i = 0; i < averaging; i++) {
-    a1 += analogRead(LSensorPin);
-    a2 += analogRead(RSensorPin);
-    delayMicroseconds(100);
+    delayMicroseconds(50);
+    a1 += analogReadFast(LSensorPin);
+    a2 += analogReadFast(RSensorPin);
   }
   ledOff();
   delay(1);
   for (int i = 0; i < averaging; i++) {
-    a1 -= analogRead(LSensorPin);
-    a2 -= analogRead(RSensorPin);
     delayMicroseconds(100);
+    a1 -= analogReadFast(LSensorPin);
+    a2 -= analogReadFast(RSensorPin);
   }
   aL = constrain(a1 / averaging, 1, 1023);
   aR = constrain(a2 / averaging, 1, 1023);
@@ -117,6 +134,30 @@ int16_t LineSensor::getAmbientSum() {
   int16_t a1, a2;
   getAmbient(a1, a2);
   return a1 + a2;
+}
+
+void LineSensor::calibrate(int16_t _whiteL, int16_t _whiteR, int16_t _blackL, int16_t _blackR) {
+  whiteL = _whiteL;
+  whiteR = _whiteR;
+  blackL = _blackL;
+  blackR = _blackR;
+}
+
+int16_t LineSensor::getOffset() {
+  int16_t a1, a2;
+  int32_t left, right, diff;
+  getReflections(a1, a2);
+  left  = map(a1, blackL, whiteL, 0, 500);  // normalize to interval 0 ... 500
+  left  = constrain(left, 0, 500);          // limit to interval 0 ... 500
+  right = map(a2, blackR, whiteR, 0, 500);
+  right = constrain(right, 0, 500);
+  diff = right - left;                                          // standard case
+  if (left > 450 && right < 450) diff = -(left + right);        // right sensor on left edge of line
+  else if (left < 450 && right > 450) diff = left + right;      // left sensor on right edge of line
+  else if (left > 450 && right > 450 && lastOffset > 0) diff = 1000;  // both sensors on white; consider history
+  else if (left > 450 && right > 450 && lastOffset < 0) diff = -1000; // both sensors on white; consider history
+  lastOffset = diff;
+  return (int16_t)diff;
 }
 
 UltrasonicSensor::UltrasonicSensor() {  // constructor

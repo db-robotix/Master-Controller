@@ -6,6 +6,8 @@
 
 #include <Arduino.h>
 #include "ServoSAMD.h"
+#include "avdweb_AnalogReadFast.h"
+
 
 class Battery {
 public:
@@ -34,7 +36,14 @@ public:
  * @brief Wait until button was pressed and released plus dly milliseconds
  */
   void wait(uint32_t dly);
+  void wait();  // default dly 0
 
+/**
+ * @brief Count button ticks with timeout in seconds
+ */
+  uint16_t count(uint8_t timeout);
+  uint16_t count();  // default timeout 2 sec
+  
 private:
   const byte ButtonPin = 7;
 };
@@ -106,12 +115,27 @@ public:
  */
   int16_t getAmbientSum();
 
+/**
+ * @brief Set calibration values for white and black reflections of left and right sensor
+ */
+void calibrate(int16_t _whiteL, int16_t _whiteR, int16_t _blackL, int16_t _blackR);
+
+/**
+ * @brief Measure reflections and calculate offset from black line, max +/-1000 (neg = left, pos = right)
+ */
+int16_t getOffset();
+
 private:
   const byte LedPin = 2;
   const byte LedPinInv = 3;
   const byte LSensorPin = A3;
   const byte RSensorPin = A4;
-  const byte averaging = 10;
+  const byte averaging = 5;
+  int16_t whiteL;
+  int16_t whiteR;
+  int16_t blackL;
+  int16_t blackR;
+  int32_t lastOffset;
 };
 
 class UltrasonicSensor {
