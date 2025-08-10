@@ -75,11 +75,11 @@ int16_t Drivetrain::getStatus() {
 }
 
 bool Drivetrain::isRunning() {
-  return (getStatus() > 0);
+  return (getStatus() >= 0);
 }
 
 void Drivetrain::wait() {
-  delay(50);
+  delay(10);
   while (isRunning()) delay(1);
 }
 
@@ -188,6 +188,24 @@ int16_t MotorsX::getStatus() {
   }
   else value = -9;  // error code
   return value;
+}
+
+bool MotorsX::isRunning_A() {
+  return ((getStatus() & 1) == 1);
+}
+
+bool MotorsX::isRunning_B() {
+  return ((getStatus() & 2) == 2);
+}
+
+void MotorsX::wait_A() {
+  delay(50);
+  while (isRunning_A()) delay(1);
+}
+
+void MotorsX::wait_B() {
+  delay(50);
+  while (isRunning_B()) delay(1);
 }
 
 // ------------------------------

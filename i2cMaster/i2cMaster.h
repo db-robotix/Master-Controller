@@ -81,6 +81,7 @@ public:
   void wait();
   
 /**
+
  * @brief Estimate the total running time in milliseconds
  */
   uint16_t estimateTime(int32_t distance, int16_t speed, int16_t accel, int16_t decel);
@@ -182,6 +183,26 @@ public:
  * @brief Get status word from motor control: 0 = both off, +1 A on, +2 B on
  */
   int16_t getStatus();
+
+/**
+ * @brief Get information if motor A is still running
+ */
+  bool isRunning_A();
+  
+/**
+ * @brief Get information if motor B is still running
+ */
+  bool isRunning_B();
+  
+/**
+ * @brief Wait until motor A is not running anymore
+ */
+  void wait_A();
+
+/**
+ * @brief Wait until motor B is not running anymore
+ */
+  void wait_B();
 
   const int16_t ACCELMAX = 10000;  // deg/s2
 private:
