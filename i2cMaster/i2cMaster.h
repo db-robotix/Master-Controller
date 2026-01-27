@@ -9,6 +9,7 @@
 
 enum motorSCommand { NONE, GO, STOP, SPEED, STEERING, ACCEL, DECEL, TARGET, COAST, BRAKE };  // do not change !
 enum motorDCommand { NONE_X, GO_A, STOP_A, SPEED_A, ACCEL_A, DECEL_A, TARGET_A, COAST_A, BRAKE_A, GO_B, STOP_B, SPEED_B, ACCEL_B, DECEL_B, TARGET_B, COAST_B, BRAKE_B };  // do not change !
+enum servoCommand  { NONE_G, ANGLE_A, DETACH_A, ANGLE_B, DETACH_B };  // do not change !
 
 /********************************************************************************/
 class Drivetrain {
@@ -24,6 +25,11 @@ public:
  * @brief Set acceleration and deceleration in cm/s2
  */
   void setAccelerations(int16_t accel, int16_t decel);
+  
+/**
+ * @brief Set acceleration = deceleration in cm/s2
+ */
+  void setAccelerations(int16_t accel);
   
 /**
  * @brief Set default values of acceleration and deceleration
@@ -89,7 +95,7 @@ public:
   int16_t Accel;
   int16_t Decel;
   const int16_t VMAX = 100;
-  const int16_t ACCELMAX = 250;  // cm/s2  max 500
+  const int16_t ACCELMAX = 200;  // cm/s2  max 500
 private:
   byte address;
 };
@@ -413,6 +419,47 @@ public:
 
   uint16_t r, g, b;
   uint16_t r0 = 0, g0 = 0, b0 = 0;  // dark values
+};
+
+/********************************************************************************/
+// Geekservo grey:
+
+const byte GeekA = 5;
+const byte GeekB = 3;
+
+class GeekservoI2C {
+
+public:
+  GeekservoI2C(byte _servoPin);  // constructor ;_servoPin = 5 or 3
+
+/**
+ * @brief Send 3 bytes over I2C bus
+ */
+  void sendCommand(byte command, int16_t value);
+    
+/**
+ * @brief Turn servo to degrees (absolutely) fast
+ */
+  void turnTo(int16_t angle);
+  
+/**
+ * @brief Turn servo to degrees (absolutely) slowly with speed degrees/s
+ */
+  void slowTo(int16_t angle, uint16_t speed);
+  
+/**
+ * @brief Let servo coast - turn current off
+ */
+  void coast();
+
+private:
+  int16_t angle2pulsewidth(int16_t angle);
+  int16_t lastAngle;
+  const uint8_t i2c_address = 6;
+  byte servoPin;  // 5 or 3
+  int16_t maxAngle = 360;
+  uint16_t pw_min = 510;
+  uint16_t pw_max = 2512;
 };
 
 #endif

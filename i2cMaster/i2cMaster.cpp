@@ -23,6 +23,13 @@ void Drivetrain::setAccelerations(int16_t accel, int16_t decel) {
   Decel = decel;
 }
 
+void Drivetrain::setAccelerations(int16_t accel) {
+  sendCommand(ACCEL, abs(accel*20));
+  sendCommand(DECEL, abs(accel*20));
+  Accel = accel;
+  Decel = accel;
+}
+
 void Drivetrain::setAccelerations() {
   sendCommand(ACCEL, ACCELMAX *20);
   sendCommand(DECEL, ACCELMAX *20);
@@ -422,4 +429,61 @@ int16_t ColorSensorB::intens(uint16_t _r, uint16_t _g, uint16_t _b) {
 
 int16_t ColorSensorB::intens() {
   return intens(r, g, b);
+}
+
+// ------------------------------
+
+GeekservoI2C::GeekservoI2C(byte _servoPin) {  // constructor
+  lastAngle = 0;
+  servoPin = _servoPin;
+}
+
+int16_t GeekservoI2C::angle2pulsewidth(int16_t angle) {
+  angle = constrain(angle, 0, maxAngle);
+  return map(angle, 0, maxAngle, pw_min, pw_max);
+}
+
+void GeekservoI2C::sendCommand(const uint8_t command, const int16_t value) {
+  Wire.beginTransmission(i2c_address); // transmit to device
+  Wire.write(command);
+  Wire.write(lowByte(value));
+  Wire.write(highByte(value));
+  if (Wire.endTransmission()) { // stop transmitting 3 bytes and get error code
+    Serial.println("Error on I2C transmission");
+  }
+  delay(1);
+}
+
+void GeekservoI2C::turnTo(int16_t angle) {
+  switch (servoPin) {
+    case GeekA:  sendCommand(ANGLE_A, angle2pulsewidth(angle)); break;
+    case GeekB:  sendCommand(ANGLE_B, angle2pulsewidth(angle)); break;
+  }
+  lastAngle = angle;
+}
+
+void GeekservoI2C::slowTo(int16_t angle, uint16_t speed) {  // speed in degrees/sec
+  int16_t _angle = constrain(angle, 0, maxAngle);
+  uint16_t dly = 1000 / speed;
+  if (angle > lastAngle) {
+    for (int16_t a = lastAngle; a <= angle; a ++) {
+      turnTo(a);
+      delay(dly);
+    }
+  }
+  else if (angle < lastAngle) {
+    for (int16_t a = lastAngle; a >= angle; a --) {
+      turnTo(a);
+      delay(dly);
+    }
+  }
+  lastAngle = angle;
+}
+
+void GeekservoI2C::coast() {
+  delay(100);
+  switch (servoPin) {
+    case GeekA:  sendCommand(DETACH_A, 0); break;
+    case GeekB:  sendCommand(DETACH_B, 0); break;
+  }
 }
