@@ -70,6 +70,7 @@ LineSensor::LineSensor() {  // constructor
   pinMode(LedPin, OUTPUT);
   pinMode(LedPinInv, OUTPUT);
   ledOff();
+  analogReference(AR_INTERNAL2V23);
 }
 
 void LineSensor::ledOn() {
